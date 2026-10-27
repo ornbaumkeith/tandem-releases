@@ -1,0 +1,42 @@
+name: Publish verified Tandem testing downloads
+on:
+  push:
+    branches: [main]
+    paths: ['distribution/manifest.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: tandem-testing-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Verify and stage approved binary assets
+        run: python3 distribution/verify.py
+      - name: Publish a testing prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=tandem-v0.5.14
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "Release already exists; refusing to replace published downloads." >&2
+            exit 1
+          fi
+          gh release create "$tag" --draft --prerelease --title "Tandem 0.5.14 — Windows and Android testing" --notes-file TESTING.md
+          gh release upload "$tag" public-assets/*
+          python3 - <<'PY'
+          import json,os,subprocess,pathlib
+          expected={p.name:p.stat().st_size for p in pathlib.Path('public-assets').iterdir()}
+          actual=json.loads(subprocess.check_output(['gh','api','repos/'+os.environ['GITHUB_REPOSITORY']+'/releases/tags/tandem-v0.5.14']))
+          assets={x['name']:x['size'] for x in actual['assets']}
+          assert assets==expected,(assets,expected)
+          print('All uploaded asset names and sizes match the verified local files.')
+          PY
+          gh release edit "$tag" --draft=false --prerelease
