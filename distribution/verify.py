@@ -48,7 +48,9 @@ for s in ['CAMERA','RECORD_AUDIO','READ_EXTERNAL_STORAGE','WRITE_EXTERNAL_STORAG
 installed=json.loads((root/'evidence/windows-installation-smoke.json').read_text())
 assert installed['ok'] and not installed['hasNode'] and installed['version']=='0.5.14'
 assert installed['installerExitCode']==0 and installed['installedFromNsis'] and installed['installPathHasSpaces']
-for name in ['windows-installation-smoke.json','source-validation-0.5.14.json']:
+renderer=json.loads((root/'evidence/windows-renderer-check.json').read_text())
+assert renderer['api']['ok'] and renderer['clipboard']['result']=='passed' and not renderer['hasNode']
+for name in ['windows-installation-smoke.json','windows-renderer-check.json','source-validation-0.5.14.json']:
     (out/name).write_bytes((root/'evidence'/name).read_bytes())
 (out/'LICENSE.txt').write_bytes((root/'LICENSE').read_bytes())
 (out/'TESTING.md').write_bytes((root/'TESTING.md').read_bytes())
