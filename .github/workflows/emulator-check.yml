@@ -1,0 +1,31 @@
+name: Android emulator environment check
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/emulator-check.yml']
+permissions:
+  contents: read
+jobs:
+  emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Inspect SDK and boot a bounded emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+          echo "SDK tools:"
+          command -v sdkmanager avdmanager adb
+          df -h / /tmp
+          free -h
+          echo "Install image:"
+          timeout 240 sdkmanager 'system-images;android-36;default;x86_64'
+          echo no | avdmanager create avd --force --name tandem-environment-check --package 'system-images;android-36;default;x86_64'
+          if [ -e /dev/kvm ]; then sudo chown "$USER" /dev/kvm; fi
+          "$ANDROID_HOME/emulator/emulator" -avd tandem-environment-check -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > "$RUNNER_TEMP/emulator.log" 2>&1 &
+          trap 'cat "$RUNNER_TEMP/emulator.log" || true' EXIT
+          timeout 120 adb wait-for-device
+          timeout 120 bash -c 'until [ "$(adb shell getprop sys.boot_completed | tr -d "\r")" = 1 ]; do sleep 2; done'
+          echo "Emulator boot completed."
+          adb emu kill
