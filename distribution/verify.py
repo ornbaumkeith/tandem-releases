@@ -45,6 +45,12 @@ errors=(out/'android-runtime-errors.txt').read_text()
 assert not any(s in errors for s in ['FATAL EXCEPTION','TypeError:','ReferenceError:','Error:'])
 for s in ['CAMERA','RECORD_AUDIO','READ_EXTERNAL_STORAGE','WRITE_EXTERNAL_STORAGE','READ_MEDIA_IMAGES','READ_MEDIA_VIDEO','SYSTEM_ALERT_WINDOW']:
     assert 'android.permission.'+s not in (out/'android-permissions.txt').read_text()
+installed=json.loads((root/'evidence/windows-installation-smoke.json').read_text())
+assert installed['ok'] and not installed['hasNode'] and installed['version']=='0.5.14'
+assert installed['installerExitCode']==0 and installed['installedFromNsis'] and installed['installPathHasSpaces']
+for name in ['windows-installation-smoke.json','source-validation-0.5.14.json']:
+    (out/name).write_bytes((root/'evidence'/name).read_bytes())
+(out/'LICENSE.txt').write_bytes((root/'LICENSE').read_bytes())
 (out/'TESTING.md').write_bytes((root/'TESTING.md').read_bytes())
 (out/'SHA256SUMS.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in sorted(out.iterdir())))
 print('Verified both native packages, checksums, and build/launch evidence; staged only public release files.')
