@@ -1,0 +1,48 @@
+name: Finalize verified Tandem testing draft
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/finalize-testing.yml']
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Verify all uploaded digests and publish only the identified testing draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess,pathlib,hashlib
+          repo=os.environ['GITHUB_REPOSITORY'];root=pathlib.Path('.')
+          manifest=json.loads((root/'distribution/manifest.json').read_text());assert manifest['version']=='0.5.14'
+          expected={}
+          for item in manifest['platforms'].values():
+              for name,digest in item['files'].items():
+                  assert name not in expected
+                  expected[name]=digest
+          empty_report='Log capture was empty: no AndroidRuntime:E or ReactNativeJS:E messages were recorded during the launch check.\n'
+          expected['android-runtime-errors.txt']=hashlib.sha256(empty_report.encode()).hexdigest()
+          for name in ['windows-installation-smoke.json','windows-renderer-check.json','source-validation-0.5.14.json']:
+              expected[name]=hashlib.sha256((root/'evidence'/name).read_bytes()).hexdigest()
+          expected['LICENSE.txt']=hashlib.sha256((root/'LICENSE').read_bytes()).hexdigest()
+          expected['TESTING.md']=hashlib.sha256((root/'TESTING.md').read_bytes()).hexdigest()
+          sums=''.join(expected[name]+'  '+name+'\n' for name in sorted(expected))
+          expected['SHA256SUMS.txt']=hashlib.sha256(sums.encode()).hexdigest()
+          release=json.loads(subprocess.check_output(['gh','api','repos/'+repo+'/releases/425523682']))
+          assert release['id']==425523682 and release['tag_name']=='tandem-v0.5.14' and release['draft'] is True and release['prerelease'] is True
+          actual={a['name']:a['digest'].removeprefix('sha256:') for a in release['assets'] if a['state']=='uploaded'}
+          assert actual==expected,(actual,expected)
+          sizes={a['name']:a['size'] for a in release['assets']}
+          assert sizes['Tandem_0.5.14_Windows_x64_Setup.exe']==120964453 and sizes['Tandem_0.5.14_Android.apk']==65809122
+          print('All 17 staged asset digests match the verified packages and reports.')
+          body=json.dumps({'draft':False,'prerelease':True}).encode()
+          published=json.loads(subprocess.check_output(['gh','api','--method','PATCH','repos/'+repo+'/releases/425523682','--input','-'],input=body))
+          assert not published['draft'] and published['tag_name']=='tandem-v0.5.14'
+          print(published['html_url'])
+          PY
