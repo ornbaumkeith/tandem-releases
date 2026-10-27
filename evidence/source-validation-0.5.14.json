@@ -12,11 +12,13 @@
     "typecheck": "passed",
     "releaseConsistency": "passed",
     "tests": {
-      "passed": 65,
+      "passed": 66,
       "failed": 0,
       "skipped": 1,
       "skipReason": "Disposable PostgreSQL integration fixture not configured in this run."
-    }
+    },
+    "runId": 40513572054,
+    "commit": "447d6d78f11f4e623266cced71732d1a4a75f35d"
   },
   "dependencyAudits": {
     "app": {
@@ -45,8 +47,8 @@
   "independentScanner": {
     "scanner": "Trivy",
     "version": "0.76.0",
-    "runId": 40512498732,
-    "databaseUpdatedAt": "2026-10-27T07:13:33.504287223Z",
+    "runId": 40514159818,
+    "databaseUpdatedAt": "2026-10-27T13:12:49.474279883Z",
     "sourceAndLockfileVulnerabilityRecords": {
       "high": 2
     },
@@ -69,6 +71,22 @@
       },
       "note": "Classification records are not 764 violations. The two restricted records are GPL names detected in historical notice documents; reciprocal lockfile entries are MPL-2.0 lightningcss tooling. Full component/notice review remains open."
     },
-    "scope": "Source and lockfiles, secret/configuration/license-file scans; not a scan of installed native binaries or device certification."
+    "scope": "Source and lockfiles, secret/configuration/license-file scans; not a scan of installed native binaries or device certification.",
+    "sourceCommit": "aaee341c36bf54f276bbbbf6b6946f367851e581"
+  },
+  "platformAcceptance": {
+    "windows": {
+      "buildRunId": 40513571786,
+      "installedRunId": 40514427609,
+      "apiAccess": true,
+      "clipboardWrite": true
+    },
+    "android": {
+      "buildRunId": 40510569303,
+      "emulatorRunId": 40514576909,
+      "installed": true,
+      "signInRendered": true,
+      "runtimeErrorsDetected": false
+    }
   }
 }
