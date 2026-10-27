@@ -2,7 +2,7 @@ name: Publish verified Tandem testing downloads
 on:
   push:
     branches: [main]
-    paths: ['distribution/manifest.json', '.github/workflows/publish-testing.yml']
+    paths: ['distribution/manifest.json']
   workflow_dispatch:
 permissions:
   contents: write
@@ -41,7 +41,9 @@ jobs:
           python3 - <<'PY'
           import json,os,subprocess,pathlib
           expected={p.name:p.stat().st_size for p in pathlib.Path('public-assets').iterdir()}
-          actual=json.loads(subprocess.check_output(['gh','api','repos/'+os.environ['GITHUB_REPOSITORY']+'/releases/tags/tandem-v0.5.14']))
+          releases=json.loads(subprocess.check_output(['gh','api','repos/'+os.environ['GITHUB_REPOSITORY']+'/releases']))
+          actual=next(r for r in releases if r['tag_name']=='tandem-v0.5.14')
+          assert actual['draft'], 'Refusing to modify a published release'
           assets={x['name']:x['size'] for x in actual['assets']}
           assert assets==expected,(assets,expected)
           print('All uploaded asset names and sizes match the verified local files.')
