@@ -84,7 +84,7 @@ The app retains personal/shared SMART goals, four editable planning steps, dated
 
 ## Validation and limitations
 
-- Windows packaged app launched successfully in a Windows GitHub runner: correct Tandem title/version, `app://tandem` origin, and no renderer Node access. This checks the packaged executable, not a complete interactive NSIS installation on a personal PC.
+- The actual Windows NSIS installer completed a silent installation into a path containing spaces in a Windows GitHub runner. The installed app launched with the correct title/version, `app://tandem` origin, and no renderer Node access. Personal-PC and interactive wizard acceptance remain open.
 - Android build, release signature/package/permission checks and emulator launch must pass before publication. The attached evidence records the actual result.
 - Fresh Node 24 source checks: locked installations, TypeScript and release consistency passed; **65 tests passed, 0 failed, 1 skipped**. The skipped PostgreSQL integration fixture was not configured in this run. Earlier live hosted account/privacy/redeploy acceptance is separate evidence.
 - October 27 dependency audits: app/Expo tooling **4 high** findings; server **0**; desktop **0**. Findings include node-forge and an Expo CLI nested Zod dependency, with affected parent packages counted too. They are not cleared by passing tests; no forced incompatible framework downgrade was applied.
