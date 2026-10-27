@@ -1,0 +1,45 @@
+{
+  "reviewedDate": "2026-10-27",
+  "clientVersion": "0.5.14",
+  "hostedApiVersion": "0.5.13",
+  "sourceValidation": {
+    "node": "24.21.0",
+    "lockedInstalls": [
+      "app",
+      "server",
+      "desktop"
+    ],
+    "typecheck": "passed",
+    "releaseConsistency": "passed",
+    "tests": {
+      "passed": 65,
+      "failed": 0,
+      "skipped": 1,
+      "skipReason": "Disposable PostgreSQL integration fixture not configured in this run."
+    }
+  },
+  "dependencyAudits": {
+    "app": {
+      "high": 4,
+      "critical": 0
+    },
+    "server": {
+      "total": 0
+    },
+    "desktop": {
+      "total": 0
+    },
+    "underlyingAppAdvisories": [
+      "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+      "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5"
+    ],
+    "note": "Affected parent packages are included in the four high entries. Findings are unresolved; no forced framework downgrade was applied."
+  },
+  "limitations": [
+    "Physical device acceptance remains open.",
+    "Full native OS/permission matrix remains open.",
+    "Password-recovery email is not configured.",
+    "Encrypted off-service backup/restore remains unvalidated.",
+    "Trivy, complete license-text review and full lifecycle matrix were not rerun in this distribution pass."
+  ]
+}
