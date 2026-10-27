@@ -40,6 +40,35 @@
     "Full native OS/permission matrix remains open.",
     "Password-recovery email is not configured.",
     "Encrypted off-service backup/restore remains unvalidated.",
-    "Trivy, complete license-text review and full lifecycle matrix were not rerun in this distribution pass."
-  ]
+    "Complete component/license-text review and the full lifecycle matrix remain open; the independent Trivy scan completed with findings."
+  ],
+  "independentScanner": {
+    "scanner": "Trivy",
+    "version": "0.76.0",
+    "runId": 40512498732,
+    "databaseUpdatedAt": "2026-10-27T07:13:33.504287223Z",
+    "sourceAndLockfileVulnerabilityRecords": {
+      "high": 2
+    },
+    "secretDetections": 0,
+    "misconfigurationFailures": [
+      {
+        "id": "DS-0002",
+        "file": "Dockerfile",
+        "title": "Container defaults to root"
+      }
+    ],
+    "licenseRecords": {
+      "total": 764,
+      "categories": {
+        "unknown": 17,
+        "notice": 723,
+        "unencumbered": 8,
+        "reciprocal": 14,
+        "restricted": 2
+      },
+      "note": "Classification records are not 764 violations. The two restricted records are GPL names detected in historical notice documents; reciprocal lockfile entries are MPL-2.0 lightningcss tooling. Full component/notice review remains open."
+    },
+    "scope": "Source and lockfiles, secret/configuration/license-file scans; not a scan of installed native binaries or device certification."
+  }
 }
