@@ -1,0 +1,12 @@
+{
+  "api": {
+    "ok": true,
+    "service": "tandem",
+    "version": "0.5.13"
+  },
+  "clipboard": {
+    "result": "passed",
+    "error": null
+  },
+  "hasNode": false
+}
