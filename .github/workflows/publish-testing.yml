@@ -2,7 +2,7 @@ name: Publish verified Tandem testing downloads
 on:
   push:
     branches: [main]
-    paths: ['distribution/manifest.json']
+    paths: ['distribution/manifest.json', '.github/workflows/publish-testing.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -25,12 +25,19 @@ jobs:
         run: |
           set -euo pipefail
           tag=tandem-v0.5.14
-          if gh release view "$tag" > /dev/null 2>&1; then
-            echo "Release already exists; refusing to replace published downloads." >&2
+          existing=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null || true)
+          if [ "$existing" = false ]; then
+            echo "Refusing to replace published downloads." >&2
+            exit 1
+          elif [ "$existing" = true ]; then
+            gh release edit "$tag" --notes-file TESTING.md
+          elif [ -z "$existing" ]; then
+            gh release create "$tag" --draft --prerelease --title "Tandem 0.5.14 — Windows and Android testing" --notes-file TESTING.md
+          else
+            echo "Unknown release state; refusing to modify it." >&2
             exit 1
           fi
-          gh release create "$tag" --draft --prerelease --title "Tandem 0.5.14 — Windows and Android testing" --notes-file TESTING.md
-          gh release upload "$tag" public-assets/*
+          gh release upload "$tag" public-assets/* --clobber
           python3 - <<'PY'
           import json,os,subprocess,pathlib
           expected={p.name:p.stat().st_size for p in pathlib.Path('public-assets').iterdir()}
