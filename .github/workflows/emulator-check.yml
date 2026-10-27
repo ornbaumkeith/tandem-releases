@@ -21,7 +21,11 @@ jobs:
           free -h
           echo "Install image:"
           timeout 240 sdkmanager 'system-images;android-36;default;x86_64'
-          echo no | avdmanager create avd --force --name tandem-environment-check --package 'system-images;android-36;default;x86_64'
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/tandem-avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo no | avdmanager create avd --force --name tandem-environment-check --path "$ANDROID_AVD_HOME/tandem-environment-check.avd" --package 'system-images;android-36;default;x86_64'
+          ls -la "$ANDROID_AVD_HOME"
+          "$ANDROID_HOME/emulator/emulator" -list-avds
           if [ -e /dev/kvm ]; then sudo chown "$USER" /dev/kvm; fi
           "$ANDROID_HOME/emulator/emulator" -avd tandem-environment-check -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > "$RUNNER_TEMP/emulator.log" 2>&1 &
           trap 'cat "$RUNNER_TEMP/emulator.log" || true' EXIT
