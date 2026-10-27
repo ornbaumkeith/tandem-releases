@@ -6,7 +6,7 @@ Download from **https://ornbaumkeith.github.io/projects/tandem/index.html** or t
 
 ## Packages
 
-- **Windows x64:** `Tandem_0.5.14_Windows_x64_Setup.exe` (120,964,212 bytes).
+- **Windows x64:** `Tandem_0.5.14_Windows_x64_Setup.exe` (120,964,453 bytes).
 - **Android:** `Tandem_0.5.14_Android.apk`. Its exact minimum Android version, supported ABIs, package metadata and signing-certificate fingerprint are in the attached `android-package.txt` and `android-signature.txt`.
 - Each installer has a matching `.sha256` file. `SHA256SUMS.txt` covers all other release assets.
 - Windows is **not Authenticode-signed**. Android uses a dedicated private release-signing identity, not the default debug key. A checksum detects corruption; it does not independently prove publisher identity.
@@ -84,9 +84,10 @@ The app retains personal/shared SMART goals, four editable planning steps, dated
 
 ## Validation and limitations
 
-- The actual Windows NSIS installer completed a silent installation into a path containing spaces in a Windows GitHub runner. The installed app launched with the correct title/version, `app://tandem` origin, and no renderer Node access. Personal-PC and interactive wizard acceptance remain open.
-- Android build, release signature/package/permission checks and emulator launch must pass before publication. The attached evidence records the actual result.
-- Fresh Node 24 source checks: locked installations, TypeScript and release consistency passed; **65 tests passed, 0 failed, 1 skipped**. The skipped PostgreSQL integration fixture was not configured in this run. Earlier live hosted account/privacy/redeploy acceptance is separate evidence.
+- The actual Windows NSIS installer completed a silent installation into a path containing spaces in a Windows GitHub runner. The installed app launched with the correct title/version, `app://tandem` origin, and no renderer Node access. The installed renderer also reached the live API and completed a user-initiated clipboard write after the scoped permission correction. Personal-PC and interactive wizard acceptance remain open.
+- Android compiled and passed release-signature/package/permission checks. The exact retained APK installed and launched in an Android 16 / API 36 x86_64 emulator; its sign-in form rendered after scrolling the compact welcome screen, with no recorded AndroidRuntime/ReactNativeJS errors. Minimum package SDK: 24 (Android 7.0); target: 36. Included ABIs: arm64-v8a, armeabi-v7a, x86_64. These package settings do not establish physical compatibility on every Android version.
+- Fresh Node 24 source checks: locked installations, TypeScript and release consistency passed; **66 tests passed, 0 failed, 1 skipped**. The skipped PostgreSQL integration fixture was not configured in this run. Earlier live hosted account/privacy/redeploy acceptance is separate evidence.
+- Independent Trivy 0.76.0 source/lockfile scan completed: 2 high vulnerability records (the same underlying advisory families), 0 detected secrets, and 1 Dockerfile configuration finding (default root user). License classifications include build tooling and names in historical notice files; complete component/notice review remains open. This is not a native binary or device security certification.
 - October 27 dependency audits: app/Expo tooling **4 high** findings; server **0**; desktop **0**. Findings include node-forge and an Expo CLI nested Zod dependency, with affected parent packages counted too. They are not cleared by passing tests; no forced incompatible framework downgrade was applied.
 - Physical Windows/Android phones/tablets, the full supported-OS matrix, hardware notification/calendar permission behavior and hardware offline replay remain open. Apple releases are deferred.
 - Android's local reminders require OS permission. Windows has in-app check-ins and .ics export, not native mobile notifications. Partner activity is synchronized in-app; remote push delivery is not provided.
